@@ -78,5 +78,20 @@
             <p>{{ result }}</p>
         {% endif %}
     </div>
+
+// Example JavaScript code to call Flask-ngrok backend
+
+const backendURL = "https://e4f38719bfa9.ngrok-free.app/attendance?ip=rtsp://admin:Tinyprismlabs:554/cam/realmonitor?channel=1&subtype=0";
+
+fetch(backendURL, {
+  headers: {
+    "ngrok-skip-browser-warning": "true"
+  }
+})
+.then(response => response.json())
+.then(data => {
+    console.log("Attendance Response:", data);
+});
+
 </body>
 </html>
