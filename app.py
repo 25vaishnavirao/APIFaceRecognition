@@ -8,6 +8,7 @@ import pickle
 import sys
 import traceback
 from io import StringIO
+from flask_cors import CORS
 import logging
 import warnings
 from insightface.app import FaceAnalysis
@@ -341,6 +342,7 @@ else:
 embeddings_path = "embeddings.pkl"
 log_dir = "Attendance_Details"
 app = Flask(__name__)
+CORS(app)
 
 
 # @app.route('/video_input', methods=['GET'])
