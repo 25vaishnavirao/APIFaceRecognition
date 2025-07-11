@@ -1,97 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Attendance System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color:#F0F0FC;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
-            margin: 0;
-        }
-
-        .container {
-            background-color: white;
-            padding: 20px 30px;
-            width:600px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            background-color: blue;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        input[type="submit"]:hover {
-            background-color: blue;
-        }
-
-        h3 {
-            color: #333;
-        }
-
-        p {
-            color: #444;
-        }
-    </style>
+  <title>RTSP Attendance Input</title>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial; padding: 30px; background: #f0f4f7; }
+    input, button { padding: 10px; margin: 10px; width: 300px; font-size: 16px; }
+    #result { margin-top: 20px; font-weight: bold; color: green; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Attendance System</h2>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Enter Username" required><br>
-            <input type="password" name="password" placeholder="Enter Password" required><br>
-            <input type="text" name="ip" placeholder="Enter IP Address" required><br>
-            <input type="number" name="port" placeholder="Enter Port Number" required><br>
-            <input type="text" name="misc" placeholder="Enter Misc Parameters" required><br>
-            <input type="submit" value="Start">
-        </form>
+  <h2>Start Face Recognition from RTSP Camera</h2>
 
-        {% if result %}
-            <h3>Result:</h3>
-            <p>{{ result }}</p>
-        {% endif %}
-    </div>
+  <form id="rtspForm">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <input type="text" id="ip" placeholder="Camera IP" required><br>
+    <input type="text" id="port" placeholder="Port" required><br>
+    <input type="text" id="misc" placeholder="Misc (e.g., channel=1&subtype=0)" required><br>
+    <button type="submit">Start Recognition</button>
+  </form>
 
-// Example JavaScript code to call Flask-ngrok backend
+  <div id="result"></div>
 
-const backendURL = "https://e4f38719bfa9.ngrok-free.app/attendance?ip=rtsp://admin:Tinyprismlabs:554/cam/realmonitor?channel=1&subtype=0";
+  <script>
+    document.getElementById("rtspForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const ip = document.getElementById("ip").value;
+      const port = document.getElementById("port").value;
+      const misc = document.getElementById("misc").value;
 
-fetch(backendURL, {
-  headers: {
-    "ngrok-skip-browser-warning": "true"
-  }
-})
-.then(response => response.json())
-.then(data => {
-    console.log("Attendance Response:", data);
-});
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("ip", ip);
+      formData.append("port", port);
+      formData.append("misc", misc);
 
+      try {
+        const response = await fetch("https://e4f38719bfa9.ngrok-free.app/attendance?ip=rtsp://admin:Tinyprismlabs@192.168.1.6:554/cam/realmonitor?channel=1&subtype=0", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "ngrok-skip-browser-warning": "true"
+          },
+          body: formData.toString()
+        });
+
+        const html = await response.text();
+        const resultText = html.match(/Face recognition process started in background/i)
+          ? "✔️ Face recognition started!"
+          : "⚠️ Could not confirm recognition start. Check logs.";
+
+        document.getElementById("result").innerText = resultText;
+      } catch (err) {
+        document.getElementById("result").innerText = "❌ Error contacting backend.";
+        console.error(err);
+      }
+    });
+  </script>
 </body>
 </html>
