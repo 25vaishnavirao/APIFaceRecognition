@@ -40,7 +40,7 @@
       formData.append("misc", misc);
 
       try {
-        const response = await fetch("https://e4f38719bfa9.ngrok-free.app/attendance?ip=rtsp://admin:Tinyprismlabs@192.168.1.6:554/cam/realmonitor?channel=1&subtype=0", {
+        const response = await fetch("https://e4f38719bfa9.ngrok-free.app/attendancecctv", {
           method: "POST",
           headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
